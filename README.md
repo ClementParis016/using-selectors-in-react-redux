@@ -1,2 +1,1 @@
-# using-selectors-in-react-redux
-Created with CodeSandbox
+https://blog.rangle.io/react-and-redux-performance-with-reselect/
