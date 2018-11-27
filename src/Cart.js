@@ -1,6 +1,9 @@
-import React from "react";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { intlAmount } from "./utils";
+import { intlAmount } from './utils';
+
+import { getItemsCount, getItemsTotal } from './store';
 
 const Cart = ({ count, amount }) => (
   <div className="Cart">
@@ -12,4 +15,9 @@ const Cart = ({ count, amount }) => (
   </div>
 );
 
-export default Cart;
+const mapStateToProps = state => ({
+  count: getItemsCount(state),
+  amount: getItemsTotal(state)
+});
+
+export default connect(mapStateToProps)(Cart);

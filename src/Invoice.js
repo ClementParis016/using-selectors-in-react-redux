@@ -1,9 +1,18 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { intlAmount, intlPercent } from "./utils";
+import { intlAmount, intlPercent } from './utils';
 
-import ShippingCountrySelector from "./ShippingCountrySelector";
+import {
+  getItemsWithTotal,
+  getShippingFees,
+  getTaxes,
+  getTotalTaxExc,
+  getTotalTaxInc,
+  getCountry
+} from './store';
+
+import ShippingCountrySelector from './ShippingCountrySelector';
 
 const Invoice = ({
   items,
@@ -18,7 +27,7 @@ const Invoice = ({
     <ShippingCountrySelector
       value={country}
       onChange={e =>
-        dispatch({ type: "SET_COUNTRY", payload: { country: e.target.value } })
+        dispatch({ type: 'SET_COUNTRY', payload: { country: e.target.value } })
       }
     />
     <table>
@@ -43,7 +52,7 @@ const Invoice = ({
                 type="button"
                 onClick={() =>
                   dispatch({
-                    type: "DECREASE_QUANTITY",
+                    type: 'DECREASE_QUANTITY',
                     payload: { id: item.id }
                   })
                 }
@@ -55,7 +64,7 @@ const Invoice = ({
                 type="button"
                 onClick={() =>
                   dispatch({
-                    type: "INCREASE_QUANTITY",
+                    type: 'INCREASE_QUANTITY',
                     payload: { id: item.id }
                   })
                 }
@@ -92,50 +101,13 @@ const Invoice = ({
   </>
 );
 
-const mapStateToProps = state => {
-  const items = Object.values(state.items).map(item => ({
-    ...item,
-    total: item.unit_price * item.quantity
-  }));
-
-  const shipping =
-    state.country
-      .split()
-      .reduce((acc, _, i) => acc + state.country.charCodeAt(i), 0) / 5;
-
-  const taxes = Object.values(
-    items.reduce(
-      (acc, item) => ({
-        ...acc,
-        [item.tax_rate]: {
-          rate: item.tax_rate,
-          amount:
-            (acc[item.tax_rate] ? acc[item.tax_rate].amount : 0) +
-            item.total * item.tax_rate
-        }
-      }),
-      {
-        0.2: {
-          rate: 0.2,
-          amount: shipping * 0.2
-        }
-      }
-    )
-  );
-
-  const totalTaxExc =
-    items.reduce((acc, item) => acc + item.total, 0) + shipping;
-
-  const totalTaxInc = taxes.reduce((acc, tax) => acc + tax.amount, totalTaxExc);
-
-  return {
-    items,
-    taxes,
-    totalTaxExc,
-    totalTaxInc,
-    country: state.country,
-    shipping
-  };
-};
+const mapStateToProps = state => ({
+  items: getItemsWithTotal(state),
+  taxes: getTaxes(state),
+  totalTaxExc: getTotalTaxExc(state),
+  totalTaxInc: getTotalTaxInc(state),
+  country: getCountry(state),
+  shipping: getShippingFees(state)
+});
 
 export default connect(mapStateToProps)(Invoice);
