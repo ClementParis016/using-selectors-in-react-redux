@@ -98,8 +98,6 @@ const mapStateToProps = state => {
     total: item.unit_price * item.quantity
   }));
 
-  const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
-
   const shipping =
     state.country
       .split()

@@ -113,3 +113,7 @@ img {
   border-radius: 15px;
   border: 1px solid;
 }
+
+select {
+  font-size: inherit;
+}
